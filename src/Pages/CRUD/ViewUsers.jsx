@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 
 const ViewUsers = () => {
   const [users, setUsers] = useState([]);
+  const [search, setSearch] = useState("");
+  const[getSort,setSort]= useState("")
   const navigate = useNavigate();
   const URL = "https://67d0e3d1825945773eb23066.mockapi.io/Users";
 
@@ -33,6 +35,19 @@ const ViewUsers = () => {
     fetchUsers();
   }, []);
 
+  const filterData = users
+    .filter((ele) => ele.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => {
+      if (getSort === "asc") {
+        return a.name.localeCompare(b.name);
+      } else if (getSort === "desc") {
+        return b.name.localeCompare(a.name);
+      }
+      return 0; 
+    });
+
+  
+
   const tableContainerStyle = {
     margin: "50px auto",
     maxWidth: "800px",
@@ -54,6 +69,19 @@ const ViewUsers = () => {
   return (
     <div style={tableContainerStyle}>
       <h3 className="text-center">User List</h3>
+      <div className="row d-flex justify-content-between m-2">
+        <input
+          type="search"
+          onChange={(e) => setSearch(e.target.value)}
+          className="form-control mb-2 w-25"
+          placeholder="Enter Name"
+        />
+        <select name="" id="" className="form-select mb-2 w-25" onChange={(e)=>setSort(e.target.value)}>
+          <option value="">--Select--</option>
+          <option value="asc">A-Z</option>
+          <option value="desc">Z-A</option>
+        </select>
+      </div>
       <div className="table-responsive">
         <table className="table table-hover text-center">
           <thead className="table-dark">
@@ -66,7 +94,7 @@ const ViewUsers = () => {
             </tr>
           </thead>
           <tbody>
-            {users.map((user, index) => (
+            {filterData.map((user, index) => (
               <tr key={user.id}>
                 <td>{index + 1}</td>
                 <td>{user.name}</td>
